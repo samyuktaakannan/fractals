@@ -1,44 +1,51 @@
 #MANDELBROT
 import turtle
+import math
+
+def mandelbrot(z , c , n=20):
+    if abs(z) > 10 ** 12:
+        return float("nan")
+    elif n > 0:
+        return mandelbrot(z ** 2 + c, c, n - 1)
+    else:
+        return z ** 2 + c
+
+# screen size (in pixels)
+screenx, screeny = 800, 600
+
+# complex plane limits
+complexPlaneX, complexPlaneY = (-2.0, 2.0), (-1.0, 2.0)
+
+# discretization step
+step = 2
+
+# turtle config
+turtle.tracer(0, 0)
+turtle.setup(screenx, screeny)
 
 screen = turtle.Screen()
-screen.setup(width=800, height=800)
-screen.bgcolor("white")
-screen.title("Mandelbrot Set")
+screen.bgcolor("violet")
+screen.title("Computer Graphics")
+mTurtle = turtle.Turtle()
+mTurtle.penup()
+mTurtle.shape("square")
 
-t = turtle.Turtle()
-t.speed(10)
-t.hideturtle()
-t.penup()
+# px * pixelToX = x in complex plane coordinates
+pixelToX, pixelToY = (complexPlaneX[1] - complexPlaneX[0])/screenx, (complexPlaneY[1] - complexPlaneY[0])/screeny
 
-def in_mandelbrot_set(x, y, max_iterations=100):
-    real = x
-    imaginary = y
-    for i in range(max_iterations):
-        real_squared = real * real
-        imaginary_squared = imaginary * imaginary
-        if real_squared + imaginary_squared > 4:
-            return False
-        temp_real = real_squared - imaginary_squared + x
-        imaginary = 2 * real * imaginary + y
-        real = temp_real
-    return True
+# plot
+for px in range(-int(screenx/2), int(screenx/2), int(step)):
+    for py in range(-int(screeny/2), int(screeny/2), int(step)):
+        x, y = px * pixelToX, py * pixelToY
+        m =  mandelbrot(0, x + 1j * y)
+        if not math.isnan(m.real):
+            color = [abs(math.sin(m.imag)) for i in range(3)]
+            mTurtle.color(color)
+            mTurtle.dot(2.4, color)
+            mTurtle.goto(px, py)
+    turtle.update()
 
-def draw_mandelbrot():
-    scale = 0.006
-    for y in range(-400, 400):
-        for x in range(-400, 400):
-            if in_mandelbrot_set(x * scale, y * scale):
-                t.goto(x, y)
-                t.pendown()
-                t.goto(x + 1, y)
-                t.goto(x + 1, y + 1)
-                t.goto(x, y + 1)
-                t.goto(x, y)
-                t.penup()
-
-draw_mandelbrot()
-screen.mainloop()
+turtle.mainloop()
 #------------------------------------------------------------------------------
 #TERRAIN
 import turtle
