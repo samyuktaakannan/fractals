@@ -1,0 +1,206 @@
+#MANDELBROT
+import turtle
+
+screen = turtle.Screen()
+screen.setup(width=800, height=800)
+screen.bgcolor("white")
+screen.title("Mandelbrot Set")
+
+t = turtle.Turtle()
+t.speed(10)
+t.hideturtle()
+t.penup()
+
+def in_mandelbrot_set(x, y, max_iterations=100):
+    real = x
+    imaginary = y
+    for i in range(max_iterations):
+        real_squared = real * real
+        imaginary_squared = imaginary * imaginary
+        if real_squared + imaginary_squared > 4:
+            return False
+        temp_real = real_squared - imaginary_squared + x
+        imaginary = 2 * real * imaginary + y
+        real = temp_real
+    return True
+
+def draw_mandelbrot():
+    scale = 0.006
+    for y in range(-400, 400):
+        for x in range(-400, 400):
+            if in_mandelbrot_set(x * scale, y * scale):
+                t.goto(x, y)
+                t.pendown()
+                t.goto(x + 1, y)
+                t.goto(x + 1, y + 1)
+                t.goto(x, y + 1)
+                t.goto(x, y)
+                t.penup()
+
+draw_mandelbrot()
+screen.mainloop()
+#------------------------------------------------------------------------------
+#TERRAIN
+import turtle
+import random
+n=int(input("number of iterations of the terrain (give less than 10 ):-"))
+#try to give the iterations as even numbers to see symmetry
+# powers of 2 are more prefereable
+step=float(input("step length for forward propagation :- "))
+#adjust this step value to increase the size of the curve
+#note as you increase the number of intersections , decrease the forward step value
+
+"""
+L system used :- 
+variables : F
+constants : + *
+start  : F
+rules  : (F -> F+F*F+F)
+angle  : 60°,120°
+Here, F means "draw forward", + means "turn left by angle" , and * means turn right by 120 deg
+"""
+def generate_string(n):
+    if n == 0:
+        return "F"
+    else:
+        prev_string = generate_string(n-1)
+        new_string = ""
+        for char in prev_string:
+            if char == "F":
+                new_string += "F+F*F+F"
+            else:
+                new_string += char
+        return new_string
+draw_string=generate_string(n)
+print(len(draw_string))
+turtle.penup()
+turtle.goto(-150, -150)#starting pos of turtle to draw the curve
+turtle.pendown()
+turtle.speed(1000000)#speed of drawing can be still increased
+for i in draw_string:
+    if i=='F':
+        color = (random.random(), random.random(), random.random())  # Random RGB color
+        turtle.color(color)
+        turtle.forward(step)
+    elif i=='+':
+        turtle.left(60)
+    elif i=='*':
+        turtle.right(120)
+turtle.done()
+#----------------------------------------------------------------------------------------------------------
+#C_CURVE
+import turtle
+
+def c_curve(depth: int):
+    start = "+f--f+"
+    for i in range(depth):
+        string = ""
+        for j in range(len(start)):
+            
+            if start[j] == 'f':
+                string += "+f--f+"
+            else:
+                string += start[j]
+        start = string
+    return start
+
+def main():
+    string = c_curve(depth=4)
+    rules = {
+            'f': [t.forward, 10],
+            '+': [t.right, 45],
+            '-': [t.left, 45],
+            }
+    for i in range(len(string)):
+        rules.get(string[i])[0](rules.get(string[i])[1])        
+
+
+t = turtle.Turtle()
+main()
+turtle.mainloop()
+turtle.done()
+#--------------------------------------------------------------------------------------------
+#DRAGON CURVE
+import turtle
+
+def dragon_curve(depth: int):
+    start = "f-h"
+    for i in range(depth):
+        string = ""
+        for j in range(len(start)):
+            if start[j] == 'f':
+                string += "f-h"
+            elif start[j] == 'h':
+                string += "f+h"
+            else:
+                string += start[j]
+        start = string
+    return start
+
+def main():
+
+    t.left(90)
+    string = dragon_curve(depth=5)
+    rules = {
+            'f': [t.forward, 10],
+            'h': [t.forward, 10],
+            '+': [t.right, 90],
+            '-': [t.left, 90],
+        }
+    for i in range(len(string)):
+        rules.get(string[i])[0](rules.get(string[i])[1])        
+
+t = turtle.Turtle()
+main()
+turtle.mainloop()
+turtle.done()
+#-----------------------------------------------------------------------------
+#SIER TRIANGLE
+import turtle
+import random
+n=int(input("number of iterations of the sier-triangle (give less than 10 ):-"))
+#try to give the iterations as even numbers to see symmetry
+# powers of 2 are more prefereable
+step=float(input("step length for forward propagation :- "))
+#adjust this step value to increase the size of the curve
+#note as you increase the number of intersections , decrease the forward step value
+
+"""
+L system used :- 
+variables : A B
+constants : + -
+start  : A
+rules  : (A → B-A-B), (B → A+B+A)
+angle  : 60°
+Here, A and B both mean "draw forward", + means "turn left by angle", and - means "turn right by angle" 
+"""
+def generate_string(n):
+    if n == 0:
+        return "A"
+    else:
+        prev_string = generate_string(n-1)
+        new_string = ""
+        for char in prev_string:
+            if char == "A":
+                new_string += "B-A-B"
+            elif char == "B":
+                new_string += "A+B+A"
+            else:
+                new_string += char
+        return new_string
+draw_string=generate_string(n)
+print(len(draw_string))
+turtle.penup()
+turtle.goto(-100, -100)#starting pos of turtle to draw the curve
+turtle.pendown()
+turtle.speed(1000000)#speed of drawing can be still increased
+for i in draw_string:
+    if i=='A' or i=='B':
+        color = (random.random(), random.random(), random.random())  # Random RGB color
+        turtle.color(color)
+        turtle.forward(step)
+    elif i=='+':
+        turtle.left(60)
+    elif i=='-':
+        turtle.right(60)
+turtle.done()   
